@@ -1,10 +1,10 @@
 #include "crt_remakes.h"
 
-size_t memset(char *s, int c, size_t n) {
-  char *p = s;
+void* memset(void *s, int c, size_t n) {
+  char *p = (char*)s;
   while (n--)
     *p++ = c;
-  return n;
+  return s;
 }
 
 void *memmove(void *dest, const void *src, size_t n) {
@@ -34,12 +34,14 @@ size_t strlen(const char *s) {
   return sum;
 }
 
-void memcpy(char *_dest, const char *_src, size_t len) {
+void* memcpy(void* _dest, void* _src, size_t len) {
   char *dst = (char *)_dest;
   char *src = (char *)_src;
 
   while (len--)
     *dst++ = *src++;
+
+  return _dest;
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
@@ -63,32 +65,64 @@ int strcmp(const char *s1, const char *s2) {
   return *(const unsigned char *)s1 - *(const unsigned char *)s2;
 }
 
-char *strstr(const char *str, const char *substring) {
-  const char *a;
-  const char *b;
-
-  b = substring;
-
-  if (*b == 0) {
-    return (char *)str;
-  }
-
-  for (; *str != 0; str += 1) {
-    if (*str != *b) {
-      continue;
-    }
-
-    a = str;
-    while (1) {
-      if (*b == 0) {
-        return (char *)str;
-      }
-      if (*a++ != *b++) {
-        break;
-      }
-    }
-    b = substring;
-  }
-
-  return NULL;
+#if _WIN32
+void operator delete(void* p)
+{
+    HeapFree(GetProcessHeap(), NULL, p);
 }
+
+void operator delete[](void* p)
+{
+    HeapFree(GetProcessHeap(), NULL, p);
+}
+
+void* operator new(size_t n)
+{
+    return HeapAlloc(GetProcessHeap(), NULL, n);
+}
+
+void* operator new[](size_t n)
+{
+    return HeapAlloc(GetProcessHeap(), NULL, n);
+}
+
+extern "C" {
+    void _fltused() { _asm("ud2"); };
+    void __chkstk() { };
+    void __CxxFrameHandler4( ) { _asm("ud2"); };
+}
+#else
+
+char* strstr(char* const _str, const char* const substring) {
+    const char* a;
+    const char* b;
+
+    char* str = _str;
+
+    b = substring;
+
+    if (*b == 0) {
+        return (char*)str;
+    }
+
+    for (; *str != 0; str += 1) {
+        if (*str != *b) {
+            continue;
+        }
+
+        a = str;
+        while (1) {
+            if (*b == 0) {
+                return (char*)str;
+            }
+            if (*a++ != *b++) {
+                break;
+            }
+        }
+        b = substring;
+    }
+
+    return NULL;
+}
+
+#endif
