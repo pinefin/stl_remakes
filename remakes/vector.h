@@ -56,6 +56,20 @@ public:
     _data[_size++] = var;
   }
 
+  void push_front(const T &var) {
+    if (_size >= _capacity) {
+      _capacity = _capacity * 2 + 1;
+      T *new_data = new T[_capacity];
+      for (size_t i = 0; i < _size; i++) {
+        new_data[i + 1] = _data[i];
+      }
+      delete[] _data; // This is where the error could occur
+      _data = new_data;
+    }
+    _data[0] = var;
+    _size++;
+  }
+
   void pop_back() { _size--; }
 
   T *begin() { return _data; }
