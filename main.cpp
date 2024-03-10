@@ -1,13 +1,22 @@
+#include "array.h"
+#include "map.h"
+#include "optional.h"
+#include "pair.h"
 #include "string.h" // our std::string is in here
 #include "vector.h" // our std::vector is in here
 
 #include <stdio.h> //only using this for printf
 
 #define STRING_TEST 0
-#define VECTOR_TEST 1
+#define VECTOR_TEST 0
+#define OPTIONAL_TEST 0
+#define PAIR_TEST 0
+#define MAP_TEST 0
+#define ARRAY_TEST 0
+#define VARIANT_TEST 1
 
 int main(int argc, char **argv) {
-  if (STRING_TEST) {                   // string test
+  if constexpr (STRING_TEST) {         // string test
     std::string test = "hello world!"; // initialize with a string
     printf("constructor: %s\n", test.c_str());
 
@@ -78,8 +87,8 @@ int main(int argc, char **argv) {
            (int)equal_operator2);
   }
 
-  if (VECTOR_TEST) {
-    std::vector<int> test = {5, 4, 3, 2, 1, 0}; // initialize with a list
+  if constexpr (VECTOR_TEST) {
+    std::vector<int> test = {5, 4, 3, 2, 1, 0};  // initialize with a list
     std::vector<int> test2 = {0, 1, 2, 3, 4, 5}; // initialize with a list
 
     int index_operator = test[2]; // indexing with an operator
@@ -87,12 +96,13 @@ int main(int argc, char **argv) {
     printf("index test %i %i\n", index_operator, index_at);
 
     printf("Loop test: { ");
-    for (auto& a : test) {
-    	printf("%i, ", a); // loop through the vector
+    for (auto &a : test) {
+      printf("%i, ", a); // loop through the vector
     }
     printf(" }\n");
 
     test.push_back(-1); // append a value
+    test.push_back(3);
     int back = test.back(); // get the last value
     printf("push back & back test: %i\n", back);
 
@@ -101,18 +111,70 @@ int main(int argc, char **argv) {
 
     test.assign(4, 100); // assign 4 values of 100
     printf("Assign test: { ");
-    for (auto& a : test) {
-    	printf("%i, ", a); // loop through the vector
-    } printf(" }\n");
+    for (auto &a : test) {
+      printf("%i, ", a); // loop through the vector
+    }
+    printf(" }\n");
 
     test.insert(test.begin() + 3, 200); // insert 200 at the 3rd index
     printf("Insert test: { ");
-    for (auto& a : test) {
-    	printf("%i, ", a); // loop through the vector
-    } printf(" }\n");
+    for (auto &a : test) {
+      printf("%i, ", a); // loop through the vector
+    }
+    printf(" }\n");
 
     bool equal1 = test == test2;
     bool equal2 = test == test;
-    printf("equal test: %i (equals %s) %i (equals %s)\n",equal1, equal1 ? "yes" : "no", equal2, equal2 ? "yes" : "no" );
+    printf("equal test: %i (equals %s) %i (equals %s)\n", equal1,
+           equal1 ? "yes" : "no", equal2, equal2 ? "yes" : "no");
+  }
+
+  if constexpr (OPTIONAL_TEST) {
+    std::optional<int> test; // initialize with no value
+    printf("no value test: %i\n", test.has_value());
+
+    test = 5; // assign a value
+    printf("has value test: %i\n", test.has_value());
+
+    int value = test.value(); // get the value
+    printf("value test: %i\n", value);
+
+    test.reset(); // reset the value
+    printf("reset test: %i\n", test.has_value());
+  }
+
+  if constexpr (PAIR_TEST) {       // this one really isnt that big of a deal
+    std::pair<int> test = {5, 10}; // initialize with a list
+    printf("pair test: %i %i\n", test.first, test.second);
+  }
+
+  if constexpr (MAP_TEST) {
+    std::map<std::string, int> test = {
+        // initializing std::map with a list of pairs (key, value)
+        {"test", 6},     // initializing std::pair with a list
+        {"test55", 6969} // initializing std::pair with a list
+    };
+
+    printf("reading test: %i %i\n", test["test55"], test["test3"]);
+
+    test["test4"] = 41414; // append a value to the map
+    printf("appending test: %i\n", test["test4"]);
+
+    test["empty_value"]; // this will create a new value with the default value
+                         // of 0
+
+    printf("values: {\n");
+    for (auto &iter : test) {
+      printf("	{'%s', %i},\n", iter.first.c_str(), iter.second);
+    }
+    printf("}\n");
+  }
+
+  if constexpr (ARRAY_TEST) {
+    std::array<int, 5> test = {1, 4, 3, 2, 5}; // initialize with a list
+
+    for (auto &iter : test) {
+      printf("%i\n", iter);
+    }
   }
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "./crt_remakes/crt_remakes.h"
 
 namespace std {
@@ -31,12 +33,12 @@ public:
   constexpr const_iterator end() const noexcept { return begin() + size(); }
 };
 template <class _Tp>
-constexpr const _Tp *begin(initializer_list<_Tp> __ils) noexcept {
+inline constexpr const _Tp *begin(initializer_list<_Tp> __ils) noexcept {
   return __ils.begin();
 }
 
 template <class _Tp>
-constexpr const _Tp *end(initializer_list<_Tp> __ils) noexcept {
+inline constexpr const _Tp *end(initializer_list<_Tp> __ils) noexcept {
   return __ils.end();
 }
 
