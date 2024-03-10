@@ -13,7 +13,6 @@
 #define PAIR_TEST 0
 #define MAP_TEST 0
 #define ARRAY_TEST 0
-#define VARIANT_TEST 1
 
 int main(int argc, char **argv) {
   if constexpr (STRING_TEST) {         // string test
