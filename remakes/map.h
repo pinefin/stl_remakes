@@ -1,9 +1,9 @@
 #pragma once
 
-#include "crt_remakes/crt_remakes.h"
+#include "../crt_remakes/crt_remakes.h"
 
-#include "pair.h"
-#include "vector.h"
+#include "./pair.h"
+#include "./vector.h"
 
 namespace std {
 template <typename K, typename V> class map {

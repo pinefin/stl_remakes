@@ -1,13 +1,13 @@
-#include "array.h"
-#include "map.h"
-#include "optional.h"
-#include "pair.h"
-#include "string.h" // our std::string is in here
-#include "vector.h" // our std::vector is in here
+#include "remakes/array.h"
+#include "remakes/map.h"
+#include "remakes/optional.h"
+#include "remakes/pair.h"
+#include "remakes/string.h" // our std::string is in here
+#include "remakes/vector.h" // our std::vector is in here
 
 #include <stdio.h> //only using this for printf
 
-#define STRING_TEST 0
+#define STRING_TEST 1
 #define VECTOR_TEST 0
 #define OPTIONAL_TEST 0
 #define PAIR_TEST 0
