@@ -7,7 +7,7 @@ class string {
   char *_data;
 
 public:
-  static size_t npos;
+  static constexpr size_t npos = -1;
 
   string() {
     _data = new char[1];
@@ -243,5 +243,3 @@ public:
   bool operator>=(const char *s) const { return strcmp(_data, s) >= 0; }
 }; // namespace std
 } // namespace std
-
-size_t std::string::npos = -1;

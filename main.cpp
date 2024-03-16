@@ -1,18 +1,28 @@
 #include "remakes/array.h"
+#include "remakes/functional.h"
 #include "remakes/map.h"
+#include "remakes/mutex.h"
 #include "remakes/optional.h"
 #include "remakes/pair.h"
 #include "remakes/string.h" // our std::string is in here
+#include "remakes/thread.h"
+#include "remakes/tuple.h"
 #include "remakes/vector.h" // our std::vector is in here
+
+#include "remakes/algorithm.h"
+#include "remakes/chrono.h"
 
 #include <stdio.h> //only using this for printf
 
-#define STRING_TEST 1
+#define STRING_TEST 0
 #define VECTOR_TEST 0
 #define OPTIONAL_TEST 0
 #define PAIR_TEST 0
 #define MAP_TEST 0
 #define ARRAY_TEST 0
+#define TUPLE_TEST 0
+#define FUNCTIONAL_TEST 0
+#define THREAD_TEST 1
 
 int main(int argc, char **argv) {
   if constexpr (STRING_TEST) {         // string test
@@ -94,16 +104,17 @@ int main(int argc, char **argv) {
     int index_at = test.at(1);    // indexing with a method
     printf("index test %i %i\n", index_operator, index_at);
 
+    test.push_back(-1); // append a value
+    test.push_back(3);
+    test.push_front(44);
+    int back = test.back(); // get the last value
+    printf("push back & back test: %i\n", back);
+
     printf("Loop test: { ");
     for (auto &a : test) {
       printf("%i, ", a); // loop through the vector
     }
     printf(" }\n");
-
-    test.push_back(-1); // append a value
-    test.push_back(3);
-    int back = test.back(); // get the last value
-    printf("push back & back test: %i\n", back);
 
     test.pop_back(); // remove the last value
     printf("pop back test & back test: %i\n", test.back());
@@ -176,4 +187,47 @@ int main(int argc, char **argv) {
       printf("%i\n", iter);
     }
   }
+
+  if constexpr (FUNCTIONAL_TEST) {
+    int lambda_scope_test = 43;
+    std::function<void(int, int)> test = [&](int a, int b) {
+      printf("lambda test: %i %i %i\n", lambda_scope_test, a, b);
+    };
+    test(4, 15);
+  }
+
+  if constexpr (TUPLE_TEST) { // TODO: expand more on tuples
+    std::tuple<double, int, int> test = {6.5, 5, 33};
+    printf("%i %f", test.get<1>(), test.get<0>());
+  }
+
+  if constexpr (THREAD_TEST) {
+    std::thread([]() { printf("thread test\n"); }).join();
+
+    bool thread_alive = true; // variable to keep the thread alive
+    std::thread([&]() {
+      do {
+        printf("thread %X alive\n", std::this_thread::get_id());
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(500)); // wait half a second
+      } while (thread_alive);
+
+      printf("thread %X exit\n",
+             std::this_thread::get_id()); // will only print if the thread
+                                          // is active and killed
+    }).detach();
+
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(3000)); // wait 3 seconds
+
+    printf("detached\n");
+
+    thread_alive = false; // kill the thread
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(
+        500)); // wait half and give the thread time to kill itself so we can
+               // see the exit message
+  }
+
+  return 1;
 }
