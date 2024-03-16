@@ -33,28 +33,33 @@ typedef int64_t int_fast64_t;
 typedef uint64_t uint_fast64_t;
 
 // Integer types capable of holding object pointers
-typedef long intptr_t;
-typedef unsigned long uintptr_t;
+#if defined(__LP64__) or defined(_WIN64) or defined(__x86_64__) or             \
+    defined(__aarch64__)
+typedef int64_t intptr_t;
+typedef uint64_t uintptr_t;
+#else
+typedef int32_t intptr_t;
+typedef uint32_t uintptr_t;
+#endif
 
 // Greatest-width integer types
-typedef long long intmax_t;
-typedef unsigned long long uintmax_t;
+typedef int64_t intmax_t;
+typedef uint64_t uintmax_t;
 using nullptr_t = decltype(nullptr);
-
-using size_t = unsigned int;
+using size_t = uintptr_t;
 
 // Constants
-const int8_t INT8_MIN = -128;
-const int8_t INT8_MAX = 127;
-const uint8_t UINT8_MAX = 255;
-const int16_t INT16_MIN = -32768;
-const int16_t INT16_MAX = 32767;
-const uint16_t UINT16_MAX = 65535;
-const int32_t INT32_MIN = -2147483648;
-const int32_t INT32_MAX = 2147483647;
-const uint32_t UINT32_MAX = 4294967295;
-const int64_t INT64_MIN = -9223372036854775807LL - 1;
-const int64_t INT64_MAX = 9223372036854775807LL;
-const uint64_t UINT64_MAX = 18446744073709551615ULL;
+constexpr int8_t INT8_MIN = -128;
+constexpr int8_t INT8_MAX = 127;
+constexpr uint8_t UINT8_MAX = 255;
+constexpr int16_t INT16_MIN = -32768;
+constexpr int16_t INT16_MAX = 32767;
+constexpr uint16_t UINT16_MAX = 65535;
+constexpr int32_t INT32_MIN = -2147483648;
+constexpr int32_t INT32_MAX = 2147483647;
+constexpr uint32_t UINT32_MAX = 4294967295;
+constexpr int64_t INT64_MIN = -9223372036854775807LL - 1;
+constexpr int64_t INT64_MAX = 9223372036854775807LL;
+constexpr uint64_t UINT64_MAX = 18446744073709551615ULL;
 
 } // namespace std
