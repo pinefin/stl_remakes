@@ -11,20 +11,54 @@
 #endif
 
 namespace std {
-class mutex {
-  friend class CondVar;
-  pthread_mutex_t m_mutex;
+    class mutex {
+        friend class CondVar;
+#ifdef UNIX
+        pthread_mutex_t m_mutex;
+#else
+        CRITICAL_SECTION m_mutex;
+#endif
 
-public:
-  // just initialize to defaults
-  mutex() { pthread_mutex_init(&m_mutex, NULL); }
-  virtual ~mutex() {
-    pthread_mutex_unlock(&m_mutex);
-    pthread_mutex_destroy(&m_mutex);
-  }
+    public:
+        // just initialize to defaults
+        mutex() {
+#ifdef UNIX
+            pthread_mutex_init(&m_mutex, NULL);
+#else
+            InitializeCriticalSection(&m_mutex);
+#endif
+        }
+        virtual ~mutex() {
+#ifdef UNIX
+            pthread_mutex_unlock(&m_mutex);
+            pthread_mutex_destroy(&m_mutex);
+#else
+            DeleteCriticalSection(&m_mutex);
+#endif
+        }
 
-  int lock() { return pthread_mutex_lock(&m_mutex); }
-  int trylock() { return pthread_mutex_trylock(&m_mutex); }
-  int unlock() { return pthread_mutex_unlock(&m_mutex); }
-};
+        int lock() {
+#ifdef UNIX
+            return pthread_mutex_lock(&m_mutex);
+#else
+            EnterCriticalSection(&m_mutex);
+            return 0; // Assuming success
+#endif
+        }
+        int trylock() {
+#ifdef UNIX
+            return pthread_mutex_trylock(&m_mutex);
+#else
+            return TryEnterCriticalSection(&m_mutex) ? 0 : 1; // Return 0 for success, 1 for failure
+#endif
+        }
+        int unlock() {
+#ifdef UNIX
+            return pthread_mutex_unlock(&m_mutex);
+#else
+            LeaveCriticalSection(&m_mutex);
+            return 0; // Assuming success
+#endif
+        }
+    };
 } // namespace std
