@@ -3,60 +3,46 @@
 #include "../crt_remakes/crt_remakes.h"
 
 namespace std {
-
-    template <class T>
+    template <class _Elem>
     class initializer_list {
     public:
-        using value_type = T;
-        using reference = const T&;
-        using const_reference = const T&;
+        using value_type = _Elem;
+        using reference = const _Elem&;
+        using const_reference = const _Elem&;
         using size_type = size_t;
-        using iterator = const T*;
-        using const_iterator = const T*;
+
+        using iterator = const _Elem*;
+        using const_iterator = const _Elem*;
+
+        constexpr initializer_list() noexcept : _First(nullptr), _Last(nullptr) {}
+
+        constexpr initializer_list(const _Elem* _First_arg, const _Elem* _Last_arg) noexcept
+            : _First(_First_arg), _Last(_Last_arg) {}
+
+        constexpr const _Elem* begin() const noexcept {
+            return _First;
+        }
+
+        constexpr const _Elem* end() const noexcept {
+            return _Last;
+        }
+
+        constexpr size_t size() const noexcept {
+            return static_cast<size_t>(_Last - _First);
+        }
 
     private:
-        const T* _M_array;
-        size_type _M_len;
-
-        // Constructor for internal use
-        constexpr initializer_list(const T* array, size_type len) noexcept
-            : _M_array(array), _M_len(len) {}
-
-
-    public:
-        // Default constructor for an empty initializer list
-        constexpr initializer_list() noexcept : _M_array(nullptr), _M_len(0) {}
-
-        template <typename... Args>
-        constexpr initializer_list(Args... args) : _M_array(nullptr), _M_len(sizeof...(args)) {
-            static T arr[] = { args... }; // Create a static array with the arguments
-            _M_array = arr;               // Assign pointer to the array
-        }
-
-        // Number of elements
-        constexpr size_type size() const noexcept { return _M_len; }
-
-        // Begin iterator
-        constexpr const_iterator begin() const noexcept { return _M_array; }
-
-        // End iterator
-        constexpr const_iterator end() const noexcept { return _M_array + _M_len; }
-
-        // Factory function to construct an initializer_list
-        static constexpr initializer_list<T> create(const T* array, size_type len) noexcept {
-            return initializer_list<T>(array, len);
-        }
+        const _Elem* _First;
+        const _Elem* _Last;
     };
 
-    // Helper functions for range-based for loops
-    template <class T>
-    constexpr const T* begin(initializer_list<T> il) noexcept {
-        return il.begin();
+    template <class _Elem>
+    constexpr const _Elem* begin(initializer_list<_Elem> _Ilist) noexcept {
+        return _Ilist.begin();
     }
 
-    template <class T>
-    constexpr const T* end(initializer_list<T> il) noexcept {
-        return il.end();
+    template <class _Elem>
+    constexpr const _Elem* end(initializer_list<_Elem> _Ilist) noexcept {
+        return _Ilist.end();
     }
-
-} // namespace std
+} //namespace std
