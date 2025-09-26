@@ -26,11 +26,12 @@ public:
   };
 
   thread()
-      : func_(nullptr), thread_(), detached_(false),
+      : func_(nullptr), thread_(), detached_(false), joined_(false),
         defaultConstructed_(true){};
 
   explicit thread(std::function<void()> func)
-      : func_(func), detached_(false), defaultConstructed_(false) {
+      : func_(func), detached_(false), joined_(false),
+        defaultConstructed_(false) {
     if (pthread_create(&thread_, nullptr, threadFunc, this) != 0) {
       *(char *)0 = 0; // crash (this is a bad way to handle errors, but it's
                       // just for testing purposes
@@ -38,7 +39,7 @@ public:
   }
 
   ~thread() {
-    if (!detached_) {
+    if (!defaultConstructed_ && !detached_ && !joined_) {
       pthread_detach(thread_);
     }
   }
